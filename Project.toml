@@ -1,0 +1,9 @@
+name = "ssht"
+uuid = "31a37590-cd06-4a2a-bb7b-cc4da623985e"
+authors = ["Erik Schnetter <schnetter@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+ssht_jll = "06c0f48c-727e-59bc-bc79-048e0b09db0c"
