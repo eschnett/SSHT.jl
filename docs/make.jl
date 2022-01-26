@@ -4,7 +4,7 @@
 push!(LOAD_PATH, "..")
 
 using Documenter
-using FastSphericalHarmonics
+using ssht
 
 makedocs(; sitename="ssht", format=Documenter.HTML(), modules=[ssht])
 
