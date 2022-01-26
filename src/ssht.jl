@@ -64,6 +64,7 @@ end
 
 # File ssht_sampling.h
 
+"L is number of modes; 0 ≤ l < L"
 sampling_dh_n(L::Integer) = Int(ccall((:ssht_sampling_dh_n, libssht), Cint, (Cint,), L))
 sampling_dh_nphi(L::Integer) = Int(ccall((:ssht_sampling_dh_nphi, libssht), Cint, (Cint,), L))
 sampling_dh_ntheta(L::Integer) = Int(ccall((:ssht_sampling_dh_ntheta, libssht), Cint, (Cint,), L))
@@ -74,11 +75,16 @@ function sampling_weight_dh(theta_t::Real, L::Integer)
 end
 
 # There are L^2 coefficients
-sampling_elm2ind(el::Int, m::Int) = el * el + el + m
+function sampling_elm2ind(el::Int, m::Int)
+    0 ≤ el || throw(DomainError())
+    -el ≤ m ≤ el || throw(DomainError())
+    return el * el + el + m + 1
+end
 sampling_elm2ind(el::Integer, m::Integer) = sampling_elm2ind(Int(el), Int(m))
 function sampling_ind2elm(ind::Int)
-    el = isqrt(ind)
-    m = ind - el^2 - el
+    1 ≤ ind || throw(DomainError())
+    el = isqrt(ind - 1)
+    m = ind - 1 - el^2 - el
     return (el, m)
 end
 sampling_ind2elm(ind::Integer) = sampling_ind2elm(Int(ind))

@@ -4,6 +4,10 @@ This package is a Julia wrapper for the
 [ssht](https://astro-informatics.github.io/ssht/) library. It
 calculates spin wpherical harmonic transforms.
 
+TODO:
+- CI
+- Documenter
+
 ## Related packages
 
 - FFTW.jl
