@@ -5,7 +5,7 @@ version = "0.1.0"
 
 [compat]
 ssht_jll = "1.5.1"
-julia = "1.4"
+julia = "1.6"
 
 [deps]
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
