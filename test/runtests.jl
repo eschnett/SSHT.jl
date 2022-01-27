@@ -2,7 +2,10 @@ using Random
 using Test
 using ssht
 
-chop(x) = abs2(x) < eps(x) ? zero(x) : x
+bitsign(b::Bool) = b ? -1 : 1
+bitsign(i::Integer) = bitsign(isodd(i))
+
+chop(x) = abs2(x) < 100eps(x) ? zero(x) : x
 chop(x::Complex) = Complex(chop(real(x)), chop(imag(x)))
 
 function integrate(f::AbstractArray{T,2}, g::AbstractArray{U,2}, L::Integer) where {T,U}
@@ -25,7 +28,50 @@ end
 
 ################################################################################
 
-@testset "Grid point counts" begin
+# These Ylm are taken from Wikipedia:
+# <https://en.wikipedia.org/wiki/Spherical_harmonics> and
+# <https://en.wikipedia.org/wiki/Spin-weighted_spherical_harmonics>
+function sYlm(s::Integer, l::Integer, m::Integer, θ::Real, ϕ::Real)
+    @assert abs(s) ≤ l
+    @assert -l ≤ m ≤ l
+
+    # Parity:
+    s < 0 && return bitsign(s + m) * conj(sYlm(-s, l, -m, θ, ϕ))
+
+    (s, l, m) == (0, 0, 0) && return sqrt(1 / 4π)
+    (s, l, m) == (0, 1, -1) && return sqrt(3 / 8π) * sin(θ) * cis(-ϕ)
+    (s, l, m) == (0, 1, 0) && return sqrt(3 / 4π) * cos(θ)
+    (s, l, m) == (0, 1, +1) && return -sqrt(3 / 8π) * sin(θ) * cis(ϕ)
+    (s, l, m) == (+1, 1, -1) && return -sqrt(3 / 16π) * (1 + cos(θ)) * cis(-ϕ)
+    (s, l, m) == (+1, 1, 0) && return sqrt(3 / 8π) * sin(θ)
+    (s, l, m) == (+1, 1, +1) && return -sqrt(3 / 16π) * (1 - cos(θ)) * cis(ϕ)
+
+    @assert false
+end
+
+# ð F = - (sin θ)^s (∂_θ + i / sin(θ) ∂_ϕ) (sin θ)^-s F
+# (Calculated manually from sYlm above)
+function ðsYlm(s::Integer, l::Integer, m::Integer, θ::Real, ϕ::Real)
+    @assert abs(s) ≤ l
+    @assert -l ≤ m ≤ l
+
+    # Parity:
+    s < 0 && return bitsign(s + m) * conj(sYlm(-s, l, -m, θ, ϕ))
+
+    (s, l, m) == (0, 0, 0) && return 0
+    (s, l, m) == (0, 1, +1) && return sqrt(3 / 8π) * (cos(θ) - 1) * cis(ϕ)
+    (s, l, m) == (0, 1, -1) && return -sqrt(3 / 8π) * (cos(θ) + 1) * cis(-ϕ)
+    (s, l, m) == (0, 1, 0) && return sqrt(3 / 4π) * sin(θ)
+    (s, l, m) == (+1, 1, -1) && return 0
+    (s, l, m) == (+1, 1, 0) && return 0
+    (s, l, m) == (+1, 1, +1) && return 0
+
+    @assert false
+end
+
+################################################################################
+
+@testset "Grid point counts (Driscoll & Healy)" begin
     for L in 1:10
         n = ssht.sampling_dh_n(L)
         nphi = ssht.sampling_dh_nphi(L)
@@ -33,6 +79,48 @@ end
         @test nphi == 2 * L - 1
         @test ntheta == 2 * L
         @test n == nphi * ntheta
+    end
+end
+
+@testset "Coordinates (Driscoll & Healy)" begin
+    for L in 1:100
+        nphi = ssht.sampling_dh_nphi(L)
+        ntheta = ssht.sampling_dh_ntheta(L)
+        for p in 1:nphi
+            phi = ssht.sampling_dh_p2phi(p, L)
+            @test phi ≈ 2π * (p - 1) / nphi
+        end
+        for t in 1:ntheta
+            theta = ssht.sampling_dh_t2theta(t, L)
+            @test theta ≈ π * (t - 1 / 2) / ntheta
+        end
+    end
+end
+
+@testset "Grid point counts (McEwen & Wiaux)" begin
+    for L in 1:2:10
+        n = ssht.sampling_mw_n(L)
+        nphi = ssht.sampling_mw_nphi(L)
+        ntheta = ssht.sampling_mw_ntheta(L)
+        @test nphi == 2 * L - 1
+        @test ntheta == L
+        # The south pole is covered only by a single point
+        @test n == nphi * (ntheta - 1) + 1
+    end
+end
+
+@testset "Coordinates (McEwen & Wiaux)" begin
+    for L in 1:100
+        nphi = ssht.sampling_mw_nphi(L)
+        ntheta = ssht.sampling_mw_ntheta(L)
+        for p in 1:nphi
+            phi = ssht.sampling_mw_p2phi(p, L)
+            @test phi ≈ 2π * (p - 1) / nphi
+        end
+        for t in 1:ntheta
+            theta = ssht.sampling_mw_t2theta(t, L)
+            @test theta ≈ π * (2 * t - 1) / (2 * ntheta - 1)
+        end
     end
 end
 
@@ -50,26 +138,24 @@ end
     end
 end
 
-@testset "Coordinates" begin
-    for L in 1:100
-        nphi = ssht.sampling_dh_nphi(L)
-        ntheta = ssht.sampling_dh_ntheta(L)
-        for p in 1:nphi
-            phi = ssht.sampling_dh_p2phi(p, L)
-            @test phi ≈ 2π * (p - 1) / nphi
-        end
-        for t in 1:ntheta
-            theta = ssht.sampling_dh_t2theta(t, L)
-            @test theta ≈ π * (t - 1 / 2) / ntheta
-        end
-    end
-end
+################################################################################
+
+# TODO: Test phase and parity of sYlm
+#
+# {\displaystyle Y_{\ell }^{m}(\theta ,\phi )\to Y_{\ell }^{m}(\pi -\theta ,\pi +\phi )=(-1)^{\ell }Y_{\ell }^{m}(\theta ,\phi )}
+#
+# <math display="block">Y_\ell^m(\theta,\phi) \to Y_\ell^m(\pi-\theta,\pi+\phi) = (-1)^\ell Y_\ell^m(\theta,\phi)</math>
+#
+# {}_s\bar Y_{l m} &= \left(-1\right)^{s+m}{}_{-s}Y_{l(-m)}\\
+#
+# {}_sY_{l m}(\pi-\theta,\phi+\pi) &= \left(-1\right)^l {}_{-s}Y_{l m}(\theta,\phi).
 
 Random.seed!(100)
-modes = [(name="(0,0)", fun=(p, t) -> sqrt(1 / 4π), modes=[1, 0, 0, 0]),
-         (name="(0,1)", fun=(theta, phi) -> -sqrt(3 / 2π) * sin(theta) * cos(phi), modes=[0, -1, 0, 1]),
-         (name="(0,-1)", fun=(theta, phi) -> sqrt(3 / 2π) * sin(theta) * sin(phi), modes=[0, im, 0, im]),
-         (name="(1,0)", fun=(theta, phi) -> sqrt(3 / 4π) * cos(theta), modes=[0, 0, 1, 0])]
+modes = [(name="(0,0)", fun=(theta, phi) -> sYlm(0, 0, 0, theta, phi), modes=[1, 0, 0, 0]),
+         (name="(1,-1)", fun=(theta, phi) -> im * sYlm(0, 1, +1, theta, phi) + im * sYlm(0, 1, -1, theta, phi),
+          modes=[0, im, 0, im]), (name="(1,0)", fun=(theta, phi) -> sYlm(0, 1, 0, theta, phi), modes=[0, 0, 1, 0]),
+         (name="(1,+1)", fun=(theta, phi) -> sYlm(0, 1, +1, theta, phi) - sYlm(0, 1, -1, theta, phi), modes=[0, -1, 0, 1])]
+
 @testset "Simple real transforms: $(mode.name)" for mode in modes
     verbosity = 0
     for iter in 1:100
@@ -99,13 +185,16 @@ modes = [(name="(0,0)", fun=(p, t) -> sqrt(1 / 4π), modes=[1, 0, 0, 0]),
 end
 
 Random.seed!(100)
-modes = [(name="(0,0,0)", spin=0, fun=(p, t) -> sqrt(1 / 4π), modes=[1, 0, 0, 0]),
-         (name="(0,0,1)", spin=0, fun=(theta, phi) -> -sqrt(3 / 8π) * sin(theta) * cis(phi), modes=[0, 0, 0, 1]),
-         (name="(0,0,-1)", spin=0, fun=(theta, phi) -> sqrt(3 / 8π) * sin(theta) * cis(-phi), modes=[0, 1, 0, 0]),
-         (name="(0,1,0)", spin=0, fun=(theta, phi) -> sqrt(3 / 4π) * cos(theta), modes=[0, 0, 1, 0]),
-         (name="(1,0,1)", spin=1, fun=(theta, phi) -> -sqrt(3 / 16π) * (1 - cos(theta)) * cis(phi), modes=[0, 0, 0, 1]),
-         (name="(1,0,-1)", spin=1, fun=(theta, phi) -> -sqrt(3 / 16π) * (1 + cos(theta)) * cis(-phi), modes=[0, 1, 0, 0]),
-         (name="(1,1,0)", spin=1, fun=(theta, phi) -> sqrt(3 / 8π) * sin(theta), modes=[0, 0, 1, 0])]
+modes = [(name="(0,0,0)", spin=0, fun=(theta, phi) -> sYlm(0, 0, 0, theta, phi), modes=[1, 0, 0, 0]),
+         (name="(0,0,-1)", spin=0, fun=(theta, phi) -> sYlm(0, 1, -1, theta, phi), modes=[0, 1, 0, 0]),
+         (name="(0,1,0)", spin=0, fun=(theta, phi) -> sYlm(0, 1, 0, theta, phi), modes=[0, 0, 1, 0]),
+         (name="(0,0,+1)", spin=0, fun=(theta, phi) -> sYlm(0, 1, +1, theta, phi), modes=[0, 0, 0, 1]),
+         (name="(+1,1,-1)", spin=+1, fun=(theta, phi) -> sYlm(+1, 1, -1, theta, phi), modes=[0, 1, 0, 0]),
+         (name="(+1,1,0)", spin=+1, fun=(theta, phi) -> sYlm(+1, 1, 0, theta, phi), modes=[0, 0, 1, 0]),
+         (name="(+1,1,+1)", spin=+1, fun=(theta, phi) -> sYlm(+1, 1, +1, theta, phi), modes=[0, 0, 0, 1]),
+         (name="(-1,1,-1)", spin=-1, fun=(theta, phi) -> sYlm(-1, 1, -1, theta, phi), modes=[0, 1, 0, 0]),
+         (name="(-1,1,0)", spin=-1, fun=(theta, phi) -> sYlm(-1, 1, 0, theta, phi), modes=[0, 0, 1, 0]),
+         (name="(-1,1,+1)", spin=-1, fun=(theta, phi) -> sYlm(-1, 1, +1, theta, phi), modes=[0, 0, 0, 1])]
 @testset "Simple complex transforms: $(mode.name) spin=$(mode.spin)" for mode in modes
     verbosity = 0
     for iter in 1:100
@@ -234,4 +323,42 @@ Random.seed!(100)
     end
 end
 
-@testset "derivatives (eth, eth-bar)" begin end
+Random.seed!(100)
+modes = [(name="(0,0,0)", spin=0, fun=(theta, phi) -> sYlm(0, 0, 0, theta, phi), ðfun=(theta, phi) -> ðsYlm(0, 0, 0, theta, phi)),
+         (name="(0,1,-1)", spin=0, fun=(theta, phi) -> sYlm(0, 1, -1, theta, phi),
+          ðfun=(theta, phi) -> ðsYlm(0, 1, -1, theta, phi)),
+         (name="(0,1,0)", spin=0, fun=(theta, phi) -> sYlm(0, 1, 0, theta, phi), ðfun=(theta, phi) -> ðsYlm(0, 1, 0, theta, phi)),
+         (name="(0,1,+1)", spin=0, fun=(theta, phi) -> sYlm(0, 1, +1, theta, phi),
+          ðfun=(theta, phi) -> ðsYlm(0, 1, +1, theta, phi)),
+         (name="(+1,1,-1)", spin=1, fun=(theta, phi) -> sYlm(+1, 1, -1, theta, phi),
+          ðfun=(theta, phi) -> ðsYlm(+1, 1, -1, theta, phi)),
+         (name="(+1,1,0)", spin=1, fun=(theta, phi) -> sYlm(+1, 1, 0, theta, phi),
+          ðfun=(theta, phi) -> ðsYlm(+1, 1, 0, theta, phi)),
+         (name="(+1,1,+1)", spin=1, fun=(theta, phi) -> sYlm(+1, 1, +1, theta, phi),
+          ðfun=(theta, phi) -> ðsYlm(+1, 1, +1, theta, phi))]
+@testset "Simple derivatives (eth, eth-bar): $(mode.name)" for mode in modes
+    verbosity = 0
+    for iter in 1:100
+        L = rand(2:20)
+        nphi = ssht.sampling_dh_nphi(L)
+        ntheta = ssht.sampling_dh_ntheta(L)
+
+        f = Array{Complex{Float64}}(undef, nphi, ntheta)
+        ðf₀ = Array{Complex{Float64}}(undef, nphi, ntheta)
+        for p in 1:nphi, t in 1:ntheta
+            phi = ssht.sampling_dh_p2phi(p, L)
+            theta = ssht.sampling_dh_t2theta(t, L)
+            f[p, t] = mode.fun(theta, phi)
+            ðf₀[p, t] = mode.ðfun(theta, phi)
+        end
+
+        flm = Array{Complex{Float64}}(undef, L^2)
+        ssht.core_dh_forward_sov!(flm, f, L, mode.spin, verbosity)
+        ðflm = similar(flm)
+        ssht.eth!(ðflm, flm, L, mode.spin)
+        ðf = similar(f)
+        ssht.core_dh_inverse_sov!(ðf, ðflm, L, mode.spin + 1, verbosity)
+
+        @test isapprox(ðf, ðf₀; atol=10000eps())
+    end
+end
