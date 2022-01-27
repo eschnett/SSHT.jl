@@ -162,4 +162,99 @@ end
 ethbar!(ð̄flm::AbstractVector, flm::AbstractVector, L::Integer, spin::Integer) = ethbar!(ð̄flm, flm, Int(L), Int(spin))
 ethbar(flm::AbstractVector, L::Integer, spin::Integer) = ethbar!(similar(flm), flm, L, spin)
 
+################################################################################
+
+export ash_size, ash_nmodes
+function ash_size(lmax::Integer)
+    0 ≤ lmax || throw(DomainError())
+    L = Int(lmax) + 1
+    nphi = sampling_dh_nphi(L)
+    ntheta = sampling_dh_ntheta(L)
+    return CartesianIndex(nphi, ntheta)
+end
+function ash_nmodes(lmax::Integer)
+    0 ≤ lmax || throw(DomainError())
+    L = Int(lmax) + 1
+    return CartesianIndex(L^2)
+end
+
+export ash_ntheta, ash_nphi, ash_thetas, ash_phis, ash_point_coord, ash_point_dcoord, ash_grid_as_phi_theta
+ash_ntheta(lmax) = ash_size[2]
+ash_nphi(lmax) = ash_size[1]
+function ash_thetas(lmax::Integer)
+    0 ≤ lmax || throw(DomainError())
+    L = Int(lmax) + 1
+    ntheta = sampling_dh_ntheta(L)
+    return [sampling_dh_t2theta(t, L) for t in 1:ntheta]
+end
+function ash_phis(lmax::Integer)
+    0 ≤ lmax || throw(DomainError())
+    L = Int(lmax) + 1
+    nphi = sampling_dh_nphi(L)
+    return [sampling_dh_p2phi(p, L) for p in 1:nphi]
+end
+function ash_point_coord(ij::CartesianIndex{2}, lmax::Integer)
+    0 ≤ lmax || throw(DomainError())
+    L = Int(lmax) + 1
+    t, p = ij
+    return sampling_dh_t2theta(t, L), sampling_dh_p2phi(p, L)
+end
+function ash_point_delta(ij::CartesianIndex{2}, lmax::Integer)
+    0 ≤ lmax || throw(DomainError())
+    L = Int(lmax) + 1
+    t, p = ij
+    nphi = ssht.sampling_dh_nphi(L)
+    theta = ssht.sampling_dh_t2theta(t, L)
+    dtheta = sampling_weight_dh(theta, L) / sin(theta)
+    dphi = 2π / nphi
+    return dtheta, dphi
+end
+ash_grid_as_phi_theta(grid::AbstractMatrix) = grid
+
+export ash_mode_index
+function ash_mode_index(s::Integer, l::Integer, m::Integer, lmax::Integer)
+    0 ≤ lmax || throw(DomainError())
+    abs(s) ≤ l ≤ lmax || throw(DomainError())
+    -l ≤ m ≤ l || throw(DomainError())
+    return sampling_elm2ind(l, m)
+end
+
+export ash_transform!, ash_transform, ash_evaluate!, ash_evaluate
+function ash_transform!(flm::AbstractArray{<:Complex}, f::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+    L = lmax + 1
+    return core_dh_forward_sov!(flm, f, L, s)
+end
+function ash_transform(f::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+    L = lmax + 1
+    return core_dh_forward_sov(f, L, s)
+end
+
+function ash_evaluate!(f::AbstractMatrix{<:Complex}, flm::AbstractArray{<:Complex}, s::Integer, lmax::Integer)
+    L = lmax + 1
+    return core_dh_inverse_sov!(f, flm, L, s)
+end
+function ash_evaluate(flm::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+    L = lmax + 1
+    return core_dh_inverse_sov(flm, L, s)
+end
+
+export ash_eth!, ash_eth, ash_ethbar!, ash_ethbar
+function ash_eth!(ðflm::AbstractMatrix{<:Complex}, flm::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+    L = lmax + 1
+    return eth!(ðflm, flm, s, L)
+end
+function ash_eth(flm::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+    L = lmax + 1
+    return eth(flm, s, L)
+end
+
+function ash_ethbar!(ðflm::AbstractMatrix{<:Complex}, flm::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+    L = lmax + 1
+    return ethbar!(ðflm, flm, s, L)
+end
+function ash_ethbar(flm::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+    L = lmax + 1
+    return ethbar(flm, s, L)
+end
+
 end
