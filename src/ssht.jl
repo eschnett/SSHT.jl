@@ -164,23 +164,23 @@ ethbar(flm::AbstractVector, L::Integer, spin::Integer) = ethbar!(similar(flm), f
 
 ################################################################################
 
-export ash_size, ash_nmodes
-function ash_size(lmax::Integer)
+export ash_grid_size, ash_nmodes
+function ash_grid_size(lmax::Integer)
     0 ≤ lmax || throw(DomainError())
     L = Int(lmax) + 1
     nphi = sampling_dh_nphi(L)
     ntheta = sampling_dh_ntheta(L)
-    return CartesianIndex(nphi, ntheta)
+    return nphi, ntheta
 end
 function ash_nmodes(lmax::Integer)
     0 ≤ lmax || throw(DomainError())
     L = Int(lmax) + 1
-    return CartesianIndex(L^2)
+    return (L^2,)
 end
 
 export ash_ntheta, ash_nphi, ash_thetas, ash_phis, ash_point_coord, ash_point_dcoord, ash_grid_as_phi_theta
-ash_ntheta(lmax) = ash_size[2]
-ash_nphi(lmax) = ash_size[1]
+ash_ntheta(lmax) = ash_grid_size(lmax)[2]
+ash_nphi(lmax) = ash_gri_size(lmax)[1]
 function ash_thetas(lmax::Integer)
     0 ≤ lmax || throw(DomainError())
     L = Int(lmax) + 1
