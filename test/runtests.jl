@@ -27,9 +27,14 @@ end
 
 ################################################################################
 
-# These Ylm are taken from Wikipedia:
+# Half angle formulae:
+#     sin(θ/2)^2 = (1-cos(θ))/2
+#     cos(θ/2)^2 = (1+cos(θ))/2
+
+# These sYlm are taken from Wikipedia and black-holes.org:
 # <https://en.wikipedia.org/wiki/Spherical_harmonics> and
 # <https://en.wikipedia.org/wiki/Spin-weighted_spherical_harmonics>
+# <https://www.black-holes.org/SpinWeightedSphericalHarmonics.nb>
 function sYlm(s::Integer, l::Integer, m::Integer, θ::Real, ϕ::Real)
     @assert abs(s) ≤ l
     @assert -l ≤ m ≤ l
@@ -41,17 +46,26 @@ function sYlm(s::Integer, l::Integer, m::Integer, θ::Real, ϕ::Real)
     (s, l, m) == (0, 1, -1) && return sqrt(3 / 8π) * sin(θ) * cis(-ϕ)
     (s, l, m) == (0, 1, 0) && return sqrt(3 / 4π) * cos(θ)
     (s, l, m) == (0, 1, +1) && return -sqrt(3 / 8π) * sin(θ) * cis(ϕ)
+    (s, l, m) == (0, 2, -2) && return sqrt(15 / 2π) * cos(θ / 2)^2 * sin(θ / 2)^2 * cis(-2ϕ)
+    (s, l, m) == (0, 2, -1) && return -sqrt(15 / 2π) * cos(θ / 2) * sin(θ / 2) * (-cos(θ / 2)^2 + sin(θ / 2)^2) * cis(-ϕ)
+    (s, l, m) == (0, 2, 0) && return sqrt(5 / 4π) * (cos(θ / 2)^4 - 4 * cos(θ / 2)^2 * sin(θ / 2)^2 + sin(θ / 2)^4)
+    (s, l, m) == (0, 2, +1) && return -sqrt(15 / 2π) * cos(θ / 2) * sin(θ / 2) * (cos(θ / 2)^2 - sin(θ / 2)^2) * cis(ϕ)
+    (s, l, m) == (0, 2, +2) && return sqrt(15 / 2π) * cos(θ / 2)^2 * sin(θ / 2)^2 * cis(2ϕ)
 
     (s, l, m) == (+1, 1, -1) && return -sqrt(3 / 16π) * (1 + cos(θ)) * cis(-ϕ)
     (s, l, m) == (+1, 1, 0) && return sqrt(3 / 8π) * sin(θ)
     (s, l, m) == (+1, 1, +1) && return -sqrt(3 / 16π) * (1 - cos(θ)) * cis(ϕ)
-    (s, l, m) == (+1, 2, -2) && return -sqrt(5 / 16π) * (1 + cos(θ)) * sin(θ) * cis(-2ϕ)
-    (s, l, m) == (+1, 2, -1) && return -sqrt(5 / 16π) * (cos(θ) + cos(2θ)) * cis(-ϕ)
-    (s, l, m) == (+1, 2, 0) && return sqrt(15 / 8π) * cos(θ) * sin(θ)
-    (s, l, m) == (+1, 2, +1) && return -sqrt(5 / 16π) * (-cos(θ) + cos(2θ)) * cis(ϕ)
-    (s, l, m) == (+1, 2, +2) && return -sqrt(5 / 16π) * (-1 + cos(θ)) * sin(θ) * cis(2ϕ)
+    (s, l, m) == (+1, 2, -2) && return -sqrt(5 / π) * cos(θ / 2)^3 * sin(θ / 2) * cis(-2ϕ)
+    (s, l, m) == (+1, 2, -1) && return -sqrt(5 / 4π) * cos(θ / 2)^2 * (cos(θ / 2)^2 - 3 * sin(θ / 2)^2) * cis(-ϕ)
+    (s, l, m) == (+1, 2, 0) && return sqrt(15 / 2π) * cos(θ / 2) * sin(θ / 2) * (cos(θ / 2)^2 - sin(θ / 2)^2)
+    (s, l, m) == (+1, 2, +1) && return sqrt(5 / 4π) * sin(θ / 2)^2 * (-3 * cos(θ / 2)^2 + sin(θ / 2)^2) * cis(ϕ)
+    (s, l, m) == (+1, 2, +2) && return sqrt(5 / π) * cos(θ / 2) * sin(θ / 2)^3 * cis(2ϕ)
 
-    # (s, l, m) == (+2, 2, -2)
+    (s, l, m) == (+2, 2, -2) && return sqrt(5 / 4π) * cos(θ / 2)^4 * cis(-2ϕ)
+    (s, l, m) == (+2, 2, -1) && return -sqrt(5 / π) * cos(θ / 2)^3 * sin(θ / 2) * cis(-ϕ)
+    (s, l, m) == (+2, 2, 0) && return sqrt(15 / 2π) * cos(θ / 2)^2 * sin(θ / 2)^2
+    (s, l, m) == (+2, 2, +1) && return -sqrt(5 / π) * cos(θ / 2) * sin(θ / 2)^3 * cis(ϕ)
+    (s, l, m) == (+2, 2, +2) && return sqrt(5 / 4π) * sin(θ / 2)^4 * cis(2ϕ)
 
     @assert false
 end
@@ -66,9 +80,26 @@ function ðsYlm(s::Integer, l::Integer, m::Integer, θ::Real, ϕ::Real)
     (s, l, m) == (0, 1, -1) && return -sqrt(3 / 8π) * (1 + cos(θ)) * cis(-ϕ)
     (s, l, m) == (0, 1, 0) && return sqrt(3 / 4π) * sin(θ)
     (s, l, m) == (0, 1, +1) && return -sqrt(3 / 8π) * (1 - cos(θ)) * cis(ϕ)
+    (s, l, m) == (0, 2, -2) && return -sqrt(15 / 8π) * (1 + cos(θ)) * sin(θ) * cis(-2ϕ)
+    (s, l, m) == (0, 2, -1) && return -sqrt(15 / 2π) * cos(θ / 2)^2 * (-1 + 2 * cos(θ)) * cis(-ϕ)
+    (s, l, m) == (0, 2, 0) && return sqrt(45 / 16π) * sin(2θ)
+    (s, l, m) == (0, 2, +1) && return -sqrt(15 / 2π) * (1 + 2 * cos(θ)) * sin(θ / 2)^2 * cis(ϕ)
+    (s, l, m) == (0, 2, +2) && return -sqrt(15 / 8π) * (-1 + cos(θ)) * sin(θ) * cis(2ϕ)
+
     (s, l, m) == (+1, 1, -1) && return 0
     (s, l, m) == (+1, 1, 0) && return 0
     (s, l, m) == (+1, 1, +1) && return 0
+    (s, l, m) == (+1, 2, -2) && return sqrt(5 / π) * cos(θ / 2)^4 * cis(-2ϕ)
+    (s, l, m) == (+1, 2, -1) && return -sqrt(5 / π) * cos(θ / 2)^2 * sin(θ) * cis(-ϕ)
+    (s, l, m) == (+1, 2, 0) && return sqrt(15 / 8π) * sin(θ)^2
+    (s, l, m) == (+1, 2, +1) && return -sqrt(5 / π) * sin(θ / 2)^2 * sin(θ) * cis(ϕ)
+    (s, l, m) == (+1, 2, +2) && return sqrt(5 / π) * sin(θ / 2)^4 * cis(2ϕ)
+
+    (s, l, m) == (+2, 2, -2) && return 0
+    (s, l, m) == (+2, 2, -1) && return 0
+    (s, l, m) == (+2, 2, 0) && return 0
+    (s, l, m) == (+2, 2, +1) && return 0
+    (s, l, m) == (+2, 2, +2) && return 0
 
     @assert false
 end
@@ -83,9 +114,27 @@ function ð̄sYlm(s::Integer, l::Integer, m::Integer, θ::Real, ϕ::Real)
     (s, l, m) == (0, 1, -1) && return sqrt(3 / 8π) * (1 - cos(θ)) * cis(-ϕ)
     (s, l, m) == (0, 1, 0) && return sqrt(3 / 4π) * sin(θ)
     (s, l, m) == (0, 1, +1) && return sqrt(3 / 8π) * (1 + cos(θ)) * cis(ϕ)
+    (s, l, m) == (0, 1, +1) && return -sqrt(3 / 8π) * (1 - cos(θ)) * cis(ϕ)
+    (s, l, m) == (0, 2, -2) && return -sqrt(15 / 8π) * (-1 + cos(θ)) * sin(θ) * cis(-2ϕ)
+    (s, l, m) == (0, 2, -1) && return sqrt(15 / 2π) * (1 + 2 * cos(θ)) * sin(θ / 2)^2 * cis(-ϕ)
+    (s, l, m) == (0, 2, 0) && return sqrt(45 / 16π) * sin(2θ)
+    (s, l, m) == (0, 2, +1) && return sqrt(15 / 2π) * cos(θ / 2)^2 * (-1 + 2 * cos(θ)) * cis(ϕ)
+    (s, l, m) == (0, 2, +2) && return -sqrt(15 / 8π) * (1 + cos(θ)) * sin(θ) * cis(2ϕ)
+
     (s, l, m) == (+1, 1, -1) && return 0
     (s, l, m) == (+1, 1, 0) && return 0
     (s, l, m) == (+1, 1, +1) && return 0
+    (s, l, m) == (+1, 2, -2) && return -sqrt(45 / 16π) * sin(θ)^2 * cis(-2ϕ)
+    (s, l, m) == (+1, 2, -1) && return -sqrt(45 / 16π) * sin(2θ) * cis(-ϕ)
+    (s, l, m) == (+1, 2, 0) && return -sqrt(15 / 32π) * (1 + 3 * cos(2θ))
+    (s, l, m) == (+1, 2, +1) && return sqrt(45 / 16π) * sin(2θ) * cis(ϕ)
+    (s, l, m) == (+1, 2, +2) && return -sqrt(45 / 16π) * sin(θ)^2 * cis(2ϕ)
+
+    (s, l, m) == (+2, 2, -2) && return 0
+    (s, l, m) == (+2, 2, -1) && return 0
+    (s, l, m) == (+2, 2, 0) && return 0
+    (s, l, m) == (+2, 2, +1) && return 0
+    (s, l, m) == (+2, 2, +2) && return 0
 
     @assert false
 end
@@ -172,13 +221,11 @@ end
 # {}_sY_{l m}(\pi-\theta,\phi+\pi) &= \left(-1\right)^l {}_{-s}Y_{l m}(\theta,\phi).
 
 Random.seed!(100)
-modes = [(name="(0,0)", fun=(θ, ϕ) -> sYlm(0, 0, 0, θ, ϕ), modes=[1, 0, 0, 0]),
-         (name="(1,-1)", fun=(θ, ϕ) -> im * sYlm(0, 1, +1, θ, ϕ) + im * sYlm(0, 1, -1, θ, ϕ), modes=[0, im, 0, im]),
-         (name="(1,0)", fun=(θ, ϕ) -> sYlm(0, 1, 0, θ, ϕ), modes=[0, 0, 1, 0]),
-         (name="(1,+1)", fun=(θ, ϕ) -> sYlm(0, 1, +1, θ, ϕ) - sYlm(0, 1, -1, θ, ϕ), modes=[0, -1, 0, 1])]
-
+modes = [(name="(l=0,m=0)", fun=(θ, ϕ) -> sYlm(0, 0, 0, θ, ϕ), modes=[1, 0, 0, 0]),
+         (name="(l=1,m=-1)", fun=(θ, ϕ) -> im * sYlm(0, 1, +1, θ, ϕ) + im * sYlm(0, 1, -1, θ, ϕ), modes=[0, im, 0, im]),
+         (name="(l=1,m=0)", fun=(θ, ϕ) -> sYlm(0, 1, 0, θ, ϕ), modes=[0, 0, 1, 0]),
+         (name="(l=1,m=+1)", fun=(θ, ϕ) -> sYlm(0, 1, +1, θ, ϕ) - sYlm(0, 1, -1, θ, ϕ), modes=[0, -1, 0, 1])]
 @testset "Simple real transforms: $(mode.name)" for mode in modes
-    verbosity = 0
     for L in 2:20
         nphi = ssht.sampling_dh_nphi(L)
         ntheta = ssht.sampling_dh_ntheta(L)
@@ -190,34 +237,23 @@ modes = [(name="(0,0)", fun=(θ, ϕ) -> sYlm(0, 0, 0, θ, ϕ), modes=[1, 0, 0, 0
             f[p, t] = mode.fun(θ, ϕ)
         end
 
-        flm = Array{Complex{Float64}}(undef, L^2)
-        ssht.core_dh_forward_sov_real!(flm, f, L, verbosity)
+        flm = ssht.core_dh_forward_sov_real(f, L)
         @assert L ≥ 2
         @test flm[1:4] ≈ mode.modes
         if L > 2
             @test all(isapprox(0; atol=100eps()), flm[5:end])
         end
 
-        f′ = similar(f)
-        ssht.core_dh_inverse_sov_real!(f′, flm, L, verbosity)
+        f′ = ssht.core_dh_inverse_sov_real(flm, L)
         @test isapprox(f′, f; atol=1000eps())
     end
 end
 
 Random.seed!(100)
-modes = [(name="(0,0,0)", spin=0, fun=(θ, ϕ) -> sYlm(0, 0, 0, θ, ϕ), modes=[1, 0, 0, 0]),
-         (name="(0,0,-1)", spin=0, fun=(θ, ϕ) -> sYlm(0, 1, -1, θ, ϕ), modes=[0, 1, 0, 0]),
-         (name="(0,1,0)", spin=0, fun=(θ, ϕ) -> sYlm(0, 1, 0, θ, ϕ), modes=[0, 0, 1, 0]),
-         (name="(0,0,+1)", spin=0, fun=(θ, ϕ) -> sYlm(0, 1, +1, θ, ϕ), modes=[0, 0, 0, 1]),
-         (name="(+1,1,-1)", spin=+1, fun=(θ, ϕ) -> sYlm(+1, 1, -1, θ, ϕ), modes=[0, 1, 0, 0]),
-         (name="(+1,1,0)", spin=+1, fun=(θ, ϕ) -> sYlm(+1, 1, 0, θ, ϕ), modes=[0, 0, 1, 0]),
-         (name="(+1,1,+1)", spin=+1, fun=(θ, ϕ) -> sYlm(+1, 1, +1, θ, ϕ), modes=[0, 0, 0, 1]),
-         (name="(-1,1,-1)", spin=-1, fun=(θ, ϕ) -> sYlm(-1, 1, -1, θ, ϕ), modes=[0, 1, 0, 0]),
-         (name="(-1,1,0)", spin=-1, fun=(θ, ϕ) -> sYlm(-1, 1, 0, θ, ϕ), modes=[0, 0, 1, 0]),
-         (name="(-1,1,+1)", spin=-1, fun=(θ, ϕ) -> sYlm(-1, 1, +1, θ, ϕ), modes=[0, 0, 0, 1])]
-@testset "Simple complex transforms: $(mode.name) spin=$(mode.spin)" for mode in modes
-    verbosity = 0
-    for L in 2:20
+modes = [(name="(s=$s,l=$l,m=$m)", spin=s, el=l, fun=(θ, ϕ) -> sYlm(s, l, m, θ, ϕ),
+          modes=L -> [l == l′ && m == m′ for l′ in 0:(L - 1) for m′ in (-l′):l′]) for s in -2:+2 for l in abs(s):2 for m in (-l):l]
+@testset "Simple complex transforms: $(mode.name)" for mode in modes
+    for L in (mode.el + 1):20
         nphi = ssht.sampling_dh_nphi(L)
         ntheta = ssht.sampling_dh_ntheta(L)
 
@@ -228,22 +264,16 @@ modes = [(name="(0,0,0)", spin=0, fun=(θ, ϕ) -> sYlm(0, 0, 0, θ, ϕ), modes=[
             f[p, t] = mode.fun(θ, ϕ)
         end
 
-        flm = Array{Complex{Float64}}(undef, L^2)
-        ssht.core_dh_forward_sov!(flm, f, L, mode.spin, verbosity)
-        @test flm[1:4] ≈ mode.modes
-        if L > 2
-            @test all(isapprox(0; atol=100eps()), flm[5:end])
-        end
+        flm = ssht.core_dh_forward_sov(f, L, mode.spin)
+        @test flm ≈ mode.modes(L)
 
-        f′ = similar(f)
-        ssht.core_dh_inverse_sov!(f′, flm, L, mode.spin, verbosity)
+        f′ = ssht.core_dh_inverse_sov(flm, L, mode.spin)
         @test isapprox(f′, f; atol=1000eps())
     end
 end
 
 Random.seed!(100)
 @testset "Linearity of real transforms" begin
-    verbosity = 0
     for iter in 1:100
         L = rand(1:100)
         nphi = ssht.sampling_dh_nphi(L)
@@ -254,12 +284,9 @@ Random.seed!(100)
         α = randn(Float64)
         h = f + α * g
 
-        flm = Array{Complex{Float64}}(undef, L^2)
-        ssht.core_dh_forward_sov_real!(flm, f, L, verbosity)
-        glm = Array{Complex{Float64}}(undef, L^2)
-        ssht.core_dh_forward_sov_real!(glm, g, L, verbosity)
-        hlm = Array{Complex{Float64}}(undef, L^2)
-        ssht.core_dh_forward_sov_real!(hlm, h, L, verbosity)
+        flm = ssht.core_dh_forward_sov_real(f, L)
+        glm = ssht.core_dh_forward_sov_real(g, L)
+        hlm = ssht.core_dh_forward_sov_real(h, L)
 
         @test flm + α * glm ≈ hlm
     end
@@ -267,7 +294,6 @@ end
 
 Random.seed!(100)
 @testset "Linearity of complex transforms" begin
-    verbosity = 0
     for iter in 1:100
         L = rand(1:100)
         nphi = ssht.sampling_dh_nphi(L)
@@ -280,12 +306,9 @@ Random.seed!(100)
         α = randn(Complex{Float64})
         h = f + α * g
 
-        flm = Array{Complex{Float64}}(undef, L^2)
-        ssht.core_dh_forward_sov!(flm, f, L, spin, verbosity)
-        glm = Array{Complex{Float64}}(undef, L^2)
-        ssht.core_dh_forward_sov!(glm, g, L, spin, verbosity)
-        hlm = Array{Complex{Float64}}(undef, L^2)
-        ssht.core_dh_forward_sov!(hlm, h, L, spin, verbosity)
+        flm = ssht.core_dh_forward_sov(f, L, spin)
+        glm = ssht.core_dh_forward_sov(g, L, spin)
+        hlm = ssht.core_dh_forward_sov(h, L, spin)
 
         @test flm + α * glm ≈ hlm
 
@@ -293,9 +316,9 @@ Random.seed!(100)
         glm = randn(Complex{Float64}, L^2)
         hlm = flm + α * glm
 
-        ssht.core_dh_inverse_sov!(f, flm, L, spin, verbosity)
-        ssht.core_dh_inverse_sov!(g, glm, L, spin, verbosity)
-        ssht.core_dh_inverse_sov!(h, hlm, L, spin, verbosity)
+        f = ssht.core_dh_inverse_sov(flm, L, spin)
+        g = ssht.core_dh_inverse_sov(glm, L, spin)
+        h = ssht.core_dh_inverse_sov(hlm, L, spin)
 
         @test f + α * g ≈ h
     end
@@ -303,7 +326,6 @@ end
 
 Random.seed!(100)
 @testset "Orthonormality of complex transforms" begin
-    verbosity = 0
     for iter in 1:100
         L = rand(1:100)
         nphi = ssht.sampling_dh_nphi(L)
@@ -322,43 +344,27 @@ Random.seed!(100)
         flm[ssht.sampling_elm2ind(lf, mf)] = 1
         glm[ssht.sampling_elm2ind(lg, mg)] = 1
 
-        f = Array{Complex{Float64}}(undef, nphi, ntheta)
-        ssht.core_dh_inverse_sov!(f, flm, L, spin, verbosity)
-        g = Array{Complex{Float64}}(undef, nphi, ntheta)
-        ssht.core_dh_inverse_sov!(g, glm, L, spin, verbosity)
+        f = ssht.core_dh_inverse_sov(flm, L, spin)
+        g = ssht.core_dh_inverse_sov(glm, L, spin)
 
         @test isapprox(integrate(f, f, L), 1; atol=1 / L^2)
         @test isapprox(integrate(f, g, L), (lf == lg) * (mf == mg); atol=1 / L^2)
 
         h = conj(f) .* f
-        hlm = Array{Complex{Float64}}(undef, L^2)
-        ssht.core_dh_forward_sov!(hlm, h, L, spin, verbosity)
+        hlm = ssht.core_dh_forward_sov(h, L, spin)
         @test isapprox(hlm[ssht.sampling_elm2ind(0, 0)], sqrt(1 / 4π); atol=sqrt(eps()))
 
         h = conj(f) .* g
-        ssht.core_dh_forward_sov!(hlm, h, L, spin, verbosity)
+        hlm = ssht.core_dh_forward_sov(h, L, spin)
         @test isapprox(hlm[ssht.sampling_elm2ind(0, 0)], (lf == lg) * (mf == mg) * sqrt(1 / 4π); atol=sqrt(eps()))
     end
 end
 
 Random.seed!(100)
-modes = [(name="(0,0,0)", spin=0, fun=(θ, ϕ) -> sYlm(0, 0, 0, θ, ϕ), ðfun=(θ, ϕ) -> ðsYlm(0, 0, 0, θ, ϕ),
-          ð̄fun=(θ, ϕ) -> ð̄sYlm(0, 0, 0, θ, ϕ)),
-         (name="(0,1,-1)", spin=0, fun=(θ, ϕ) -> sYlm(0, 1, -1, θ, ϕ), ðfun=(θ, ϕ) -> ðsYlm(0, 1, -1, θ, ϕ),
-          ð̄fun=(θ, ϕ) -> ð̄sYlm(0, 1, -1, θ, ϕ)),
-         (name="(0,1,0)", spin=0, fun=(θ, ϕ) -> sYlm(0, 1, 0, θ, ϕ), ðfun=(θ, ϕ) -> ðsYlm(0, 1, 0, θ, ϕ),
-          ð̄fun=(θ, ϕ) -> ð̄sYlm(0, 1, 0, θ, ϕ)),
-         (name="(0,1,+1)", spin=0, fun=(θ, ϕ) -> sYlm(0, 1, +1, θ, ϕ), ðfun=(θ, ϕ) -> ðsYlm(0, 1, +1, θ, ϕ),
-          ð̄fun=(θ, ϕ) -> ð̄sYlm(0, 1, +1, θ, ϕ)),
-         (name="(+1,1,-1)", spin=1, fun=(θ, ϕ) -> sYlm(+1, 1, -1, θ, ϕ), ðfun=(θ, ϕ) -> ðsYlm(+1, 1, -1, θ, ϕ),
-          ð̄fun=(θ, ϕ) -> ð̄sYlm(+1, 1, -1, θ, ϕ)),
-         (name="(+1,1,0)", spin=1, fun=(θ, ϕ) -> sYlm(+1, 1, 0, θ, ϕ), ðfun=(θ, ϕ) -> ðsYlm(+1, 1, 0, θ, ϕ),
-          ð̄fun=(θ, ϕ) -> ð̄sYlm(+1, 1, 0, θ, ϕ)),
-         (name="(+1,1,+1)", spin=1, fun=(θ, ϕ) -> sYlm(+1, 1, +1, θ, ϕ), ðfun=(θ, ϕ) -> ðsYlm(+1, 1, +1, θ, ϕ),
-          ð̄fun=(θ, ϕ) -> ð̄sYlm(+1, 1, +1, θ, ϕ))]
+modes = [(name="(s=$s,l=$l,m=$m)", spin=s, el=l, fun=(θ, ϕ) -> sYlm(s, l, m, θ, ϕ), ðfun=(θ, ϕ) -> ðsYlm(s, l, m, θ, ϕ),
+          ð̄fun=(θ, ϕ) -> ð̄sYlm(s, l, m, θ, ϕ)) for s in 0:+2 for l in abs(s):2 for m in (-l):l]
 @testset "Simple derivatives (eth, eth-bar): $(mode.name)" for mode in modes
-    verbosity = 0
-    for L in 2:20
+    for L in (mode.el + 1):20
         nphi = ssht.sampling_dh_nphi(L)
         ntheta = ssht.sampling_dh_ntheta(L)
 
@@ -373,14 +379,14 @@ modes = [(name="(0,0,0)", spin=0, fun=(θ, ϕ) -> sYlm(0, 0, 0, θ, ϕ), ðfun=(
             ð̄f₀[p, t] = mode.ð̄fun(θ, ϕ)
         end
 
-        flm = ssht.core_dh_forward_sov(f, L, mode.spin, verbosity)
+        flm = ssht.core_dh_forward_sov(f, L, mode.spin)
 
         ðflm = ssht.eth(flm, L, mode.spin)
-        ðf = ssht.core_dh_inverse_sov(ðflm, L, mode.spin + 1, verbosity)
+        ðf = ssht.core_dh_inverse_sov(ðflm, L, mode.spin + 1)
         @test isapprox(ðf, ðf₀; atol=10000eps())
 
         ð̄flm = ssht.ethbar(flm, L, mode.spin)
-        ð̄f = ssht.core_dh_inverse_sov(ð̄flm, L, mode.spin - 1, verbosity)
+        ð̄f = ssht.core_dh_inverse_sov(ð̄flm, L, mode.spin - 1)
         @test isapprox(ð̄f, ð̄f₀; atol=10000eps())
     end
 end

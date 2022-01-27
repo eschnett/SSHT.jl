@@ -9,9 +9,14 @@ calculates spin wpherical harmonic transforms.
   CI](https://github.com/eschnett/ssht.jl/workflows/CI/badge.svg)](https://github.com/eschnett/ssht.jl/actions)
 * [![Codecov](https://codecov.io/gh/eschnett/ssht.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/eschnett/ssht.jl)
 
+## Related papers
+
+- https://arxiv.org/abs/1604.08140
+
 ## Related packages
 
-- FFTW.jl
-- FastSphericalHarmonics.jl
-- FastTransforms.jl
-- SHTOOLS.jl
+- [FFTW.jl](https://github.com/JuliaMath/FFTW.jl)
+- [FastSphericalHarmonics.jl](https://github.com/eschnett/FastSphericalHarmonics.jl)
+- [FastTransforms.jl](https://github.com/JuliaApproximation/FastTransforms.jl)
+- [SHTOOLS.jl](https://github.com/eschnett/SHTOOLS.jl)
+- [SphericalFunctions.jl](https://github.com/moble/SphericalFunctions.jl)

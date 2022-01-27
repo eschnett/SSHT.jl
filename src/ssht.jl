@@ -37,11 +37,11 @@ function core_dh_inverse_sov_real!(f::AbstractArray{Float64,2}, flm::AbstractVec
           verbosity)
     return f
 end
-function core_dh_inverse_sov_real(Lflm::AbstractVector{Complex{Float64}}, spin::Integer, verbosity::Integer=0)
+function core_dh_inverse_sov_real(flm::AbstractVector{Complex{Float64}}, L::Integer, verbosity::Integer=0)
     nphi = sampling_dh_nphi(L)
     ntheta = sampling_dh_ntheta(L)
     f = Array{Float64}(undef, nphi, ntheta)
-    core_dh_inverse_sov_real!(f, flm, L, spin, verbosity)
+    core_dh_inverse_sov_real!(f, flm, L, verbosity)
     return f
 end
 
