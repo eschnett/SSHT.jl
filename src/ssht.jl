@@ -9,89 +9,73 @@ using ssht_jll
 # L is number of modes; 0 ≤ l < L
 # verbosity: 0 ≤ v ≤ 5
 
-function core_dh_inverse_sov!(f::Array{Complex{Float64},2}, flm::Vector{Complex{Float64}}, L::Integer, spin::Integer,
-                              verbosity::Integer)
+function core_dh_inverse_sov!(f::AbstractArray{Complex{Float64},2}, flm::AbstractVector{Complex{Float64}}, L::Integer,
+                              spin::Integer, verbosity::Integer=0)
     nphi = sampling_dh_nphi(L)
     ntheta = sampling_dh_ntheta(L)
     any(size(f) .< (nphi, ntheta)) && throw(DimensionMismatch())
     length(flm) < L^2 && throw(DimensionMismatch())
     ccall((:ssht_core_dh_inverse_sov, libssht), Cvoid, (Ptr{Complex{Float64}}, Ptr{Complex{Float64}}, Cint, Cint, Cint), f, flm, L,
           spin, verbosity)
-    return nothing
+    return f
+end
+function core_dh_inverse_sov(flm::AbstractVector{Complex{Float64}}, L::Integer, spin::Integer, verbosity::Integer=0)
+    nphi = sampling_dh_nphi(L)
+    ntheta = sampling_dh_ntheta(L)
+    f = Array{Complex{Float64}}(undef, nphi, ntheta)
+    core_dh_inverse_sov!(f, flm, L, spin, verbosity)
+    return f
 end
 
-function core_dh_inverse_sov_real!(f::Array{Float64,2}, flm::Vector{Complex{Float64}}, L::Integer, verbosity::Integer)
+function core_dh_inverse_sov_real!(f::AbstractArray{Float64,2}, flm::AbstractVector{Complex{Float64}}, L::Integer,
+                                   verbosity::Integer=0)
     nphi = sampling_dh_nphi(L)
     ntheta = sampling_dh_ntheta(L)
     any(size(f) .< (nphi, ntheta)) && throw(DimensionMismatch())
     length(flm) < L^2 && throw(DimensionMismatch())
     ccall((:ssht_core_dh_inverse_sov_real, libssht), Cvoid, (Ptr{Complex{Float64}}, Ptr{Complex{Float64}}, Cint, Cint), f, flm, L,
           verbosity)
-    return nothing
+    return f
+end
+function core_dh_inverse_sov_real(Lflm::AbstractVector{Complex{Float64}}, spin::Integer, verbosity::Integer=0)
+    nphi = sampling_dh_nphi(L)
+    ntheta = sampling_dh_ntheta(L)
+    f = Array{Float64}(undef, nphi, ntheta)
+    core_dh_inverse_sov_real!(f, flm, L, spin, verbosity)
+    return f
 end
 
-function core_dh_forward_sov!(flm::Vector{Complex{Float64}}, f::Array{Complex{Float64},2}, L::Integer, spin::Integer,
-                              verbosity::Integer)
+function core_dh_forward_sov!(flm::AbstractVector{Complex{Float64}}, f::AbstractArray{Complex{Float64},2}, L::Integer,
+                              spin::Integer, verbosity::Integer=0)
     nphi = sampling_dh_nphi(L)
     ntheta = sampling_dh_ntheta(L)
     length(flm) < L^2 && throw(DimensionMismatch())
     any(size(f) .< (nphi, ntheta)) && throw(DimensionMismatch())
     ccall((:ssht_core_dh_forward_sov, libssht), Cvoid, (Ptr{Complex{Float64}}, Ptr{Complex{Float64}}, Cint, Cint, Cint), flm, f, L,
           spin, verbosity)
-    return nothing
+    return flm
+end
+function core_dh_forward_sov(f::AbstractArray{Complex{Float64},2}, L::Integer, spin::Integer, verbosity::Integer=0)
+    flm = Array{Complex{Float64}}(undef, L^2)
+    core_dh_forward_sov!(flm, f, L, spin, verbosity)
+    return flm
 end
 
-function core_dh_forward_sov_real!(flm::Vector{Complex{Float64}}, f::Array{Float64,2}, L::Integer, verbosity::Integer)
+function core_dh_forward_sov_real!(flm::AbstractVector{Complex{Float64}}, f::AbstractArray{Float64,2}, L::Integer,
+                                   verbosity::Integer=0)
     nphi = sampling_dh_nphi(L)
     ntheta = sampling_dh_ntheta(L)
     length(flm) < L^2 && throw(DimensionMismatch())
     any(size(f) .< (nphi, ntheta)) && throw(DimensionMismatch())
     ccall((:ssht_core_dh_forward_sov_real, libssht), Cvoid, (Ptr{Complex{Float64}}, Ptr{Complex{Float64}}, Cint, Cint), flm, f, L,
           verbosity)
-    return nothing
+    return flm
 end
-
-# function core_mw_inverse_sov!(f::Array{Complex{Float64},2}, flm::Vector{Complex{Float64}}, L::Integer, spin::Integer,
-#                               verbosity::Integer)
-#     nphi = sampling_mw_nphi(L)
-#     ntheta = sampling_mw_ntheta(L)
-#     any(size(f) .< (nphi, ntheta)) && throw(DimensionMismatch())
-#     length(flm) < L^2 && throw(DimensionMismatch())
-#     ccall((:ssht_core_mw_inverse_sov, libssht), Cvoid, (Ptr{Complex{Float64}}, Ptr{Complex{Float64}}, Cint, Cint, Cint), f, flm, L,
-#           spin, verbosity)
-#     return nothing
-# end
-# 
-# function core_mw_inverse_sov_real!(f::Array{Float64,2}, flm::Vector{Complex{Float64}}, L::Integer, verbosity::Integer)
-#     nphi = sampling_mw_nphi(L)
-#     ntheta = sampling_mw_ntheta(L)
-#     any(size(f) .< (nphi, ntheta)) && throw(DimensionMismatch())
-#     length(flm) < L^2 && throw(DimensionMismatch())
-#     ccall((:ssht_core_mw_inverse_sov_real, libssht), Cvoid, (Ptr{Complex{Float64}}, Ptr{Complex{Float64}}, Cint, Cint), f, flm, L,
-#           verbosity)
-#     return nothing
-# end
-# 
-# function core_mw_forward_sov!(flm::Vector{Complex{Float64}}, f::Array{Complex{Float64},2}, L::Integer, spin::Integer,
-#                               verbosity::Integer)
-#     nphi = sampling_mw_nphi(L)
-#     ntheta = sampling_mw_ntheta(L)
-#     length(flm) < L^2 && throw(DimensionMismatch())
-#     any(size(f) .< (nphi, ntheta)) && throw(DimensionMismatch())
-#     ccall((:ssht_core_mw_forward_sov, libssht), Cvoid, (Ptr{Complex{Float64}}, Ptr{Complex{Float64}}, Cint, Cint, Cint), flm, f, L,
-#           spin, verbosity)
-#     return nothing
-# end
-# 
-# function core_mw_forward_sov_real!(flm::Vector{Complex{Float64}}, f::Array{Float64,2}, L::Integer, verbosity::Integer)
-#     nphi = sampling_mw_nphi(L)
-#     ntheta = sampling_mw_ntheta(L)
-#     length(flm) < L^2 && throw(DimensionMismatch())
-#     any(size(f) .< (nphi, ntheta)) && throw(DimensionMismatch())
-#     ccall((:ssht_core_mw_forward_sov_real, libssht), Cvoid, (Ptr{Complex{Float64}}, Ptr{Complex{Float64}}, Cint, Cint), flm, f, L,
-#           verbosity)
-#     return nothing
-# end
+function core_dh_forward_sov_real(f::AbstractArray{Float64,2}, L::Integer, verbosity::Integer=0)
+    flm = Array{Complex{Float64}}(undef, L^2)
+    core_dh_forward_sov_real!(flm, f, L, verbosity)
+    return flm
+end
 
 # File ssht_dl.h
 
@@ -131,14 +115,14 @@ end
 function sampling_elm2ind(el::Int, m::Int)
     0 ≤ el || throw(DomainError())
     -el ≤ m ≤ el || throw(DomainError())
-    return el * el + el + m + 1
+    return el^2 + el + m + 1
 end
 sampling_elm2ind(el::Integer, m::Integer) = sampling_elm2ind(Int(el), Int(m))
 function sampling_ind2elm(ind::Int)
     1 ≤ ind || throw(DomainError())
     el = isqrt(ind - 1)
-    m = ind - 1 - el^2 - el
-    return (el, m)
+    m = ind - el^2 - el - 1
+    return el, m
 end
 sampling_ind2elm(ind::Integer) = sampling_ind2elm(Int(ind))
 
@@ -156,9 +140,10 @@ function eth!(ðflm::AbstractVector, flm::AbstractVector, L::Int, spin::Int)
         # ð sYlm = + sqrt((l-s)*(l+s+1)) (s+1)Ylm
         ðflm[ind] = sqrt((l - spin) * (l + spin + 1)) * flm[ind]
     end
-    return nothing
+    return ðflm
 end
 eth!(ðflm::AbstractVector, flm::AbstractVector, L::Integer, spin::Integer) = eth!(ðflm, flm, Int(L), Int(spin))
+eth(flm::AbstractVector, L::Integer, spin::Integer) = eth!(similar(flm), flm, L, spin)
 
 function ethbar!(ð̄flm::AbstractVector, flm::AbstractVector, L::Int, spin::Int)
     0 < L || throw(DomainError())
@@ -172,10 +157,9 @@ function ethbar!(ð̄flm::AbstractVector, flm::AbstractVector, L::Int, spin::Int
         # ð̄ sYlm = - sqrt((l+s)*(l-s+1)) (s-1)Ylm
         ð̄flm[ind] = -sqrt((l + spin) * (l - spin + 1)) * flm[ind]
     end
-    return nothing
+    return ð̄flm
 end
-function ethbar!(ð̄flm::AbstractVector, flm::AbstractVector, L::Integer, spin::Integer)
-    return ethbar!(ð̄flm, flm, Int(L), Int(spin))
-end
+ethbar!(ð̄flm::AbstractVector, flm::AbstractVector, L::Integer, spin::Integer) = ethbar!(ð̄flm, flm, Int(L), Int(spin))
+ethbar(flm::AbstractVector, L::Integer, spin::Integer) = ethbar!(similar(flm), flm, L, spin)
 
 end
