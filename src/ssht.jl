@@ -130,15 +130,21 @@ sampling_ind2elm(ind::Integer) = sampling_ind2elm(Int(ind))
 
 function eth!(ðflm::AbstractVector, flm::AbstractVector, L::Int, spin::Int)
     0 < L || throw(DomainError())
-    for l in 0:min(abs(spin), L - 1), m in (-l):l
+    T = typeof(abs(zero(eltype(flm))))
+    # @assert T <: Real
+    lmin = max(abs(spin), abs(spin + 1))
+    lmax = L - 1
+    for l in 0:min(lmin - 1, lmax), m in (-l):l
+        # @assert (l - spin) * (l + spin + 1) ≤ 0
         ind = sampling_elm2ind(l, m)
         ðflm[ind] = 0
     end
-    for l in (abs(spin) + 1):(L - 1), m in (-l):l
+    for l in lmin:lmax, m in (-l):l
+        # @assert (l - spin) * (l + spin + 1) > 0
         ind = sampling_elm2ind(l, m)
         # <https://en.wikipedia.org/wiki/Spin-weighted_spherical_harmonics>
         # ð sYlm = + sqrt((l-s)*(l+s+1)) (s+1)Ylm
-        ðflm[ind] = sqrt((l - spin) * (l + spin + 1)) * flm[ind]
+        ðflm[ind] = sqrt(T((l - spin) * (l + spin + 1))) * flm[ind]
     end
     return ðflm
 end
@@ -147,15 +153,21 @@ eth(flm::AbstractVector, L::Integer, spin::Integer) = eth!(similar(flm), flm, L,
 
 function ethbar!(ð̄flm::AbstractVector, flm::AbstractVector, L::Int, spin::Int)
     0 < L || throw(DomainError())
-    for l in 0:min(abs(spin), L - 1), m in (-l):l
+    T = typeof(abs(zero(eltype(flm))))
+    # @assert T <: Real
+    lmin = max(abs(spin), abs(spin - 1))
+    lmax = L - 1
+    for l in 0:min(lmin - 1, lmax), m in (-l):l
+        # @assert (l + spin) * (l - spin + 1) ≤ 0
         ind = sampling_elm2ind(l, m)
         ð̄flm[ind] = 0
     end
-    for l in (abs(spin) + 1):(L - 1), m in (-l):l
+    for l in lmin:lmax, m in (-l):l
+        # @assert (l + spin) * (l - spin + 1) > 0
         ind = sampling_elm2ind(l, m)
         # <https://en.wikipedia.org/wiki/Spin-weighted_spherical_harmonics>
         # ð̄ sYlm = - sqrt((l+s)*(l-s+1)) (s-1)Ylm
-        ð̄flm[ind] = -sqrt((l + spin) * (l - spin + 1)) * flm[ind]
+        ð̄flm[ind] = -sqrt(T((l + spin) * (l - spin + 1))) * flm[ind]
     end
     return ð̄flm
 end
