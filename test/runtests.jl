@@ -331,14 +331,15 @@ Random.seed!(100)
         nphi = ssht.sampling_dh_nphi(L)
         ntheta = ssht.sampling_dh_ntheta(L)
 
-        spin = 0rand(-4:4)
+        smax = min(4, L - 1)
+        spin = rand((-smax):smax)
 
         flm = zeros(Complex{Float64}, L^2)
         glm = zeros(Complex{Float64}, L^2)
 
-        lf = rand(0:(L - 1))
+        lf = rand(abs(spin):(L - 1))
         mf = rand((-lf):lf)
-        lg = rand(0:(L - 1))
+        lg = rand(abs(spin):(L - 1))
         mg = rand((-lg):lg)
 
         flm[ssht.sampling_elm2ind(lf, mf)] = 1
@@ -351,11 +352,14 @@ Random.seed!(100)
         @test isapprox(integrate(f, g, L), (lf == lg) * (mf == mg); atol=1 / L^2)
 
         h = conj(f) .* f
-        hlm = ssht.core_dh_forward_sov(h, L, spin)
+        hlm = ssht.core_dh_forward_sov(h, L, 0)
+        if !isapprox(hlm[ssht.sampling_elm2ind(0, 0)], sqrt(1 / 4π); atol=sqrt(eps()))
+            @show L lf mf lg mg spin
+        end
         @test isapprox(hlm[ssht.sampling_elm2ind(0, 0)], sqrt(1 / 4π); atol=sqrt(eps()))
 
         h = conj(f) .* g
-        hlm = ssht.core_dh_forward_sov(h, L, spin)
+        hlm = ssht.core_dh_forward_sov(h, L, 0)
         @test isapprox(hlm[ssht.sampling_elm2ind(0, 0)], (lf == lg) * (mf == mg) * sqrt(1 / 4π); atol=sqrt(eps()))
     end
 end
