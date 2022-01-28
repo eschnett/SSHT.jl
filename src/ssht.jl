@@ -178,7 +178,7 @@ function ash_nmodes(lmax::Integer)
     return (L^2,)
 end
 
-export ash_ntheta, ash_nphi, ash_thetas, ash_phis, ash_point_coord, ash_point_dcoord, ash_grid_as_phi_theta
+export ash_ntheta, ash_nphi, ash_thetas, ash_phis, ash_point_coord, ash_point_delta, ash_grid_as_phi_theta
 ash_ntheta(lmax) = ash_grid_size(lmax)[2]
 ash_nphi(lmax) = ash_gri_size(lmax)[1]
 function ash_thetas(lmax::Integer)
