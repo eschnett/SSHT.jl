@@ -241,20 +241,20 @@ end
 export ash_eth!, ash_eth, ash_ethbar!, ash_ethbar
 function ash_eth!(ðflm::AbstractArray{<:Complex}, flm::AbstractArray{<:Complex}, s::Integer, lmax::Integer)
     L = lmax + 1
-    return eth!(ðflm, flm, s, L)
+    return eth!(ðflm, flm, L, s)
 end
 function ash_eth(flm::AbstractArray{<:Complex}, s::Integer, lmax::Integer)
     L = lmax + 1
-    return eth(flm, s, L)
+    return eth(flm, L, s)
 end
 
 function ash_ethbar!(ðflm::AbstractArray{<:Complex}, flm::AbstractArray{<:Complex}, s::Integer, lmax::Integer)
     L = lmax + 1
-    return ethbar!(ðflm, flm, s, L)
+    return ethbar!(ðflm, flm, L, s)
 end
 function ash_ethbar(flm::AbstractArray{<:Complex}, s::Integer, lmax::Integer)
     L = lmax + 1
-    return ethbar(flm, s, L)
+    return ethbar(flm, L, s)
 end
 
 end
