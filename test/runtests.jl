@@ -121,20 +121,20 @@ function ð̄sYlm(s::Integer, l::Integer, m::Integer, θ::Real, ϕ::Real)
     (s, l, m) == (0, 2, +1) && return sqrt(15 / 2π) * cos(θ / 2)^2 * (-1 + 2 * cos(θ)) * cis(ϕ)
     (s, l, m) == (0, 2, +2) && return -sqrt(15 / 8π) * (1 + cos(θ)) * sin(θ) * cis(2ϕ)
 
-    (s, l, m) == (+1, 1, -1) && return 0
-    (s, l, m) == (+1, 1, 0) && return 0
-    (s, l, m) == (+1, 1, +1) && return 0
+    (s, l, m) == (+1, 1, -1) && return -sqrt(3 / 4π) * sin(θ) * cis(-ϕ)
+    (s, l, m) == (+1, 1, 0) && return -sqrt(3 / 2π) * cos(θ)
+    (s, l, m) == (+1, 1, +1) && return sqrt(3 / 4π) * sin(θ) * cis(ϕ)
     (s, l, m) == (+1, 2, -2) && return -sqrt(45 / 16π) * sin(θ)^2 * cis(-2ϕ)
     (s, l, m) == (+1, 2, -1) && return -sqrt(45 / 16π) * sin(2θ) * cis(-ϕ)
     (s, l, m) == (+1, 2, 0) && return -sqrt(15 / 32π) * (1 + 3 * cos(2θ))
     (s, l, m) == (+1, 2, +1) && return sqrt(45 / 16π) * sin(2θ) * cis(ϕ)
     (s, l, m) == (+1, 2, +2) && return -sqrt(45 / 16π) * sin(θ)^2 * cis(2ϕ)
 
-    (s, l, m) == (+2, 2, -2) && return 0
-    (s, l, m) == (+2, 2, -1) && return 0
-    (s, l, m) == (+2, 2, 0) && return 0
-    (s, l, m) == (+2, 2, +1) && return 0
-    (s, l, m) == (+2, 2, +2) && return 0
+    (s, l, m) == (+2, 2, -2) && return sqrt(5 / 4π) * (1 + cos(θ)) * sin(θ) * cis(-2ϕ)
+    (s, l, m) == (+2, 2, -1) && return sqrt(5 / 4π) * (cos(θ) + cos(2θ)) * cis(-ϕ)
+    (s, l, m) == (+2, 2, 0) && return -sqrt(15 / 2π) * cos(θ) * sin(θ)
+    (s, l, m) == (+2, 2, +1) && return sqrt(5 / 4π) * (cos(θ) - cos(2θ)) * cis(ϕ)
+    (s, l, m) == (+2, 2, +2) && return -sqrt(5 / π) * sin(θ / 2)^2 * sin(θ) * cis(2ϕ)
 
     @assert false
 end
@@ -353,9 +353,6 @@ Random.seed!(100)
 
         h = conj(f) .* f
         hlm = ssht.core_dh_forward_sov(h, L, 0)
-        if !isapprox(hlm[ssht.sampling_elm2ind(0, 0)], sqrt(1 / 4π); atol=sqrt(eps()))
-            @show L lf mf lg mg spin
-        end
         @test isapprox(hlm[ssht.sampling_elm2ind(0, 0)], sqrt(1 / 4π); atol=sqrt(eps()))
 
         h = conj(f) .* g
