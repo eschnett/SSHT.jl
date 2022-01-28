@@ -233,26 +233,26 @@ function ash_evaluate!(f::AbstractMatrix{<:Complex}, flm::AbstractArray{<:Comple
     L = lmax + 1
     return core_dh_inverse_sov!(f, flm, L, s)
 end
-function ash_evaluate(flm::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+function ash_evaluate(flm::AbstractArray{<:Complex}, s::Integer, lmax::Integer)
     L = lmax + 1
     return core_dh_inverse_sov(flm, L, s)
 end
 
 export ash_eth!, ash_eth, ash_ethbar!, ash_ethbar
-function ash_eth!(ðflm::AbstractMatrix{<:Complex}, flm::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+function ash_eth!(ðflm::AbstractArray{<:Complex}, flm::AbstractArray{<:Complex}, s::Integer, lmax::Integer)
     L = lmax + 1
     return eth!(ðflm, flm, s, L)
 end
-function ash_eth(flm::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+function ash_eth(flm::AbstractArray{<:Complex}, s::Integer, lmax::Integer)
     L = lmax + 1
     return eth(flm, s, L)
 end
 
-function ash_ethbar!(ðflm::AbstractMatrix{<:Complex}, flm::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+function ash_ethbar!(ðflm::AbstractArray{<:Complex}, flm::AbstractArray{<:Complex}, s::Integer, lmax::Integer)
     L = lmax + 1
     return ethbar!(ðflm, flm, s, L)
 end
-function ash_ethbar(flm::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
+function ash_ethbar(flm::AbstractArray{<:Complex}, s::Integer, lmax::Integer)
     L = lmax + 1
     return ethbar(flm, s, L)
 end
