@@ -196,13 +196,13 @@ end
 function ash_point_coord(ij::CartesianIndex{2}, lmax::Integer)
     0 ≤ lmax || throw(DomainError())
     L = Int(lmax) + 1
-    t, p = ij
+    t, p = Tuple(ij)
     return sampling_dh_t2theta(t, L), sampling_dh_p2phi(p, L)
 end
 function ash_point_delta(ij::CartesianIndex{2}, lmax::Integer)
     0 ≤ lmax || throw(DomainError())
     L = Int(lmax) + 1
-    t, p = ij
+    t, p = Tuple(ij)
     nphi = ssht.sampling_dh_nphi(L)
     theta = ssht.sampling_dh_t2theta(t, L)
     dtheta = sampling_weight_dh(theta, L) / sin(theta)
