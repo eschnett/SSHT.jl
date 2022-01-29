@@ -113,13 +113,13 @@ end
 
 # There are L^2 coefficients
 function sampling_elm2ind(el::Int, m::Int)
-    0 ≤ el || throw(DomainError())
-    -el ≤ m ≤ el || throw(DomainError())
+    0 ≤ el || throw(DomainError(el, "Need 0 ≤ el"))
+    -el ≤ m ≤ el || throw(DomainError(m, "Need -el ≤ m ≤ el"))
     return el^2 + el + m + 1
 end
 sampling_elm2ind(el::Integer, m::Integer) = sampling_elm2ind(Int(el), Int(m))
 function sampling_ind2elm(ind::Int)
-    1 ≤ ind || throw(DomainError())
+    1 ≤ ind || throw(DomainError(ind, "Need 1 ≤ ind"))
     el = isqrt(ind - 1)
     m = ind - el^2 - el - 1
     return el, m
@@ -129,7 +129,7 @@ sampling_ind2elm(ind::Integer) = sampling_ind2elm(Int(ind))
 ################################################################################
 
 function eth!(ðflm::AbstractVector, flm::AbstractVector, L::Int, spin::Int)
-    0 < L || throw(DomainError())
+    0 < L || throw(DomainError(L, "Need 0 < L"))
     T = typeof(abs(zero(eltype(flm))))
     # @assert T <: Real
     lmin = max(abs(spin), abs(spin + 1))
@@ -152,7 +152,7 @@ eth!(ðflm::AbstractVector, flm::AbstractVector, L::Integer, spin::Integer) = et
 eth(flm::AbstractVector, L::Integer, spin::Integer) = eth!(similar(flm), flm, L, spin)
 
 function ethbar!(ð̄flm::AbstractVector, flm::AbstractVector, L::Int, spin::Int)
-    0 < L || throw(DomainError())
+    0 < L || throw(DomainError(L, "Need 0 < L"))
     T = typeof(abs(zero(eltype(flm))))
     # @assert T <: Real
     lmin = max(abs(spin), abs(spin - 1))
@@ -178,14 +178,14 @@ ethbar(flm::AbstractVector, L::Integer, spin::Integer) = ethbar!(similar(flm), f
 
 export ash_grid_size, ash_nmodes
 function ash_grid_size(lmax::Integer)
-    0 ≤ lmax || throw(DomainError())
+    0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
     nphi = sampling_dh_nphi(L)
     ntheta = sampling_dh_ntheta(L)
     return nphi, ntheta
 end
 function ash_nmodes(lmax::Integer)
-    0 ≤ lmax || throw(DomainError())
+    0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
     return (L^2,)
 end
@@ -194,25 +194,25 @@ export ash_ntheta, ash_nphi, ash_thetas, ash_phis, ash_point_coord, ash_point_de
 ash_ntheta(lmax) = ash_grid_size(lmax)[2]
 ash_nphi(lmax) = ash_gri_size(lmax)[1]
 function ash_thetas(lmax::Integer)
-    0 ≤ lmax || throw(DomainError())
+    0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
     ntheta = sampling_dh_ntheta(L)
     return [sampling_dh_t2theta(t, L) for t in 1:ntheta]
 end
 function ash_phis(lmax::Integer)
-    0 ≤ lmax || throw(DomainError())
+    0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
     nphi = sampling_dh_nphi(L)
     return [sampling_dh_p2phi(p, L) for p in 1:nphi]
 end
 function ash_point_coord(ij::CartesianIndex{2}, lmax::Integer)
-    0 ≤ lmax || throw(DomainError())
+    0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
     p, t = Tuple(ij)
     return sampling_dh_t2theta(t, L), sampling_dh_p2phi(p, L)
 end
 function ash_point_delta(ij::CartesianIndex{2}, lmax::Integer)
-    0 ≤ lmax || throw(DomainError())
+    0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
     p, t = Tuple(ij)
     nphi = ssht.sampling_dh_nphi(L)
@@ -225,9 +225,9 @@ ash_grid_as_phi_theta(grid::AbstractMatrix) = grid
 
 export ash_mode_index
 function ash_mode_index(s::Integer, l::Integer, m::Integer, lmax::Integer)
-    0 ≤ lmax || throw(DomainError())
-    abs(s) ≤ l ≤ lmax || throw(DomainError())
-    -l ≤ m ≤ l || throw(DomainError())
+    0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
+    abs(s) ≤ l ≤ lmax || throw(DomainError(l, "Need abs(s) ≤ l ≤ lmax"))
+    -l ≤ m ≤ l || throw(DomainError(m, "Need -l ≤ m ≤ l"))
     return sampling_elm2ind(l, m)
 end
 
