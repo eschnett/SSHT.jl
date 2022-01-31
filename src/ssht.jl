@@ -1,4 +1,4 @@
-module ssht
+module SSHT
 
 using ssht_jll
 
