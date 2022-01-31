@@ -4,8 +4,8 @@
 push!(LOAD_PATH, "..")
 
 using Documenter
-using ssht
+using SSHT
 
-makedocs(; sitename="ssht", format=Documenter.HTML(), modules=[ssht])
+makedocs(; sitename="SSHT", format=Documenter.HTML(), modules=[SSHT])
 
-deploydocs(; repo="github.com/eschnett/ssht.jl.git", devbranch="main", push_preview=true)
+deploydocs(; repo="github.com/eschnett/SSHT.jl.git", devbranch="main", push_preview=true)
