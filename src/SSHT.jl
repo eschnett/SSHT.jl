@@ -215,8 +215,8 @@ function ash_point_delta(ij::CartesianIndex{2}, lmax::Integer)
     0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
     p, t = Tuple(ij)
-    nphi = ssht.sampling_dh_nphi(L)
-    theta = ssht.sampling_dh_t2theta(t, L)
+    nphi = sampling_dh_nphi(L)
+    theta = sampling_dh_t2theta(t, L)
     dtheta = sampling_weight_dh(theta, L) / sin(theta)
     dphi = 2π / nphi
     return dtheta, dphi
