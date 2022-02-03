@@ -9,6 +9,30 @@ using ssht_jll
 # L is number of modes; 0 ≤ l < L
 # verbosity: 0 ≤ v ≤ 5
 
+"""
+    SSHT.core_dh_inverse_sov!(f::AbstractArray{Complex{Float64},2},
+                              flm::AbstractVector{Complex{Float64}},
+                              L::Integer,
+                              spin::Integer,
+                              verbosity::Integer=0)
+
+Evaluate spin-weighted spherical harmonic coefficients `flm` with
+spin-weight `spin`. `L = lmax+1` is the number of modes in `flm`.
+
+The arrays `flm` and `f` must have the following sizes:
+
+    nphi = SSHT.sampling_dh_nphi(L)
+    ntheta = SSHT.sampling_dh_ntheta(L)
+    length(flm) == L^2
+    size(f) == (nphi, ntheta)
+
+See the [SSHT
+reference](https://astro-informatics.github.io/ssht/c/html/ssht__core_8h.html)
+for details.
+
+See also: [`core_dh_inverse_sov!`](@ref),
+[`core_dh_inverse_sov_real!`](@ref), [`core_dh_forward_sov!`](@ref).
+"""
 function core_dh_inverse_sov!(f::AbstractArray{Complex{Float64},2}, flm::AbstractVector{Complex{Float64}}, L::Integer,
                               spin::Integer, verbosity::Integer=0)
     nphi = sampling_dh_nphi(L)
@@ -19,6 +43,31 @@ function core_dh_inverse_sov!(f::AbstractArray{Complex{Float64},2}, flm::Abstrac
           spin, verbosity)
     return f
 end
+
+"""
+    f = SSHT.core_dh_inverse_sov(flm::AbstractVector{Complex{Float64}},
+                                 L::Integer,
+                                 spin::Integer,
+                                 verbosity::Integer=0)
+    f::Array{Complex{Float64},2}
+
+Evaluate spin-weighted spherical harmonic coefficients `flm` with
+spin-weight `spin`. `L = lmax+1` is the number of modes in `flm`.
+
+The array `flm` must have the length `L^2`. The result `f` will have
+the following size:
+
+    nphi = SSHT.sampling_dh_nphi(L)
+    ntheta = SSHT.sampling_dh_ntheta(L)
+    size(f) == (nphi, ntheta)
+
+See the [SSHT
+reference](https://astro-informatics.github.io/ssht/c/html/ssht__core_8h.html)
+for details.
+
+See also: [`core_dh_inverse_sov`](@ref),
+[`core_dh_inverse_sov_real`](@ref), [`core_dh_forward_sov`](@ref).
+"""
 function core_dh_inverse_sov(flm::AbstractVector{Complex{Float64}}, L::Integer, spin::Integer, verbosity::Integer=0)
     nphi = sampling_dh_nphi(L)
     ntheta = sampling_dh_ntheta(L)
