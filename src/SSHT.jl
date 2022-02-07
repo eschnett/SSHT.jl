@@ -635,7 +635,7 @@ function ash_mode_index(s::Integer, l::Integer, m::Integer, lmax::Integer)
     return CartesianIndex(sampling_elm2ind(l, m))::CartesianIndex{1}
 end
 export ash_mode_numbers
-function ash_mode_numbers(s::Int, ind::NTuple{1,<:Int}, lmax::Int)
+function ash_mode_numbers(s::Int, ind::Union{CartesianIndex{2},NTuple{1,<:Int}}, lmax::Int)
     0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     l, m = sampling_ind2elm(ind[1])
     return (l, m)::NTuple{2,Int}
