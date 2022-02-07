@@ -609,13 +609,13 @@ function ash_phis(lmax::Integer)
     nphi = sampling_dh_nphi(L)
     return [sampling_dh_p2phi(p, L) for p in 1:nphi]
 end
-function ash_point_coord(ij::CartesianIndex{2}, lmax::Integer)
+function ash_point_coord(ij::Union{CartesianIndex{2},NTuple{2,Int}}, lmax::Integer)
     0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
     p, t = Tuple(ij)
     return sampling_dh_t2theta(t, L), sampling_dh_p2phi(p, L)
 end
-function ash_point_delta(ij::CartesianIndex{2}, lmax::Integer)
+function ash_point_delta(ij::Union{CartesianIndex{2},NTuple{2,Int}}, lmax::Integer)
     0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
     p, t = Tuple(ij)
@@ -624,7 +624,7 @@ function ash_point_delta(ij::CartesianIndex{2}, lmax::Integer)
     dtheta = sampling_weight_dh(theta, L) / sin(theta)
     dphi = 2π / nphi
     return dtheta, dphi
-end
+endn
 ash_grid_as_phi_theta(grid::AbstractMatrix) = grid
 
 export ash_mode_index
@@ -632,7 +632,7 @@ function ash_mode_index(s::Integer, l::Integer, m::Integer, lmax::Integer)
     0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     abs(s) ≤ l ≤ lmax || throw(DomainError(l, "Need abs(s) ≤ l ≤ lmax"))
     -l ≤ m ≤ l || throw(DomainError(m, "Need -l ≤ m ≤ l"))
-    return sampling_elm2ind(l, m)::Int
+    return (sampling_elm2ind(l, m),)::NTuple{1,Int}
 end
 export ash_mode_numbers
 function ash_mode_numbers(s::Int, ind::NTuple{1,<:Int}, lmax::Int)
