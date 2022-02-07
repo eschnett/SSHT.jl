@@ -586,17 +586,17 @@ function ash_grid_size(lmax::Integer)
     L = Int(lmax) + 1
     nphi = sampling_dh_nphi(L)
     ntheta = sampling_dh_ntheta(L)
-    return nphi, ntheta
+    return (nphi, ntheta)::NTuple{2,Int}
 end
 function ash_nmodes(lmax::Integer)
     0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
-    return (L^2,)
+    return (L^2,)::NTuple{1,Int}
 end
 
 export ash_ntheta, ash_nphi, ash_thetas, ash_phis, ash_point_coord, ash_point_delta, ash_grid_as_phi_theta
-ash_ntheta(lmax) = ash_grid_size(lmax)[2]
-ash_nphi(lmax) = ash_gri_size(lmax)[1]
+ash_ntheta(lmax) = ash_grid_size(lmax)[2]::Int
+ash_nphi(lmax) = ash_gri_size(lmax)[1]::Int
 function ash_thetas(lmax::Integer)
     0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
@@ -632,8 +632,15 @@ function ash_mode_index(s::Integer, l::Integer, m::Integer, lmax::Integer)
     0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     abs(s) ≤ l ≤ lmax || throw(DomainError(l, "Need abs(s) ≤ l ≤ lmax"))
     -l ≤ m ≤ l || throw(DomainError(m, "Need -l ≤ m ≤ l"))
-    return sampling_elm2ind(l, m)
+    return sampling_elm2ind(l, m)::Int
 end
+export ash_mode_numbers
+function ash_mode_numbers(s::Int, ind::NTuple{1,<:Int}, lmax::Int)
+    0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
+    l, m = sampling_ind2elm(ind[1])
+    return (l, m)::NTuple{2,Int}
+end
+ash_mode_numbers(s::Integer, ind::NTuple{1,<:Integer}, lmax::Integer) = ash_mode_numbers(Int(s), NTuple{1,Int}(ind), Int(lmax))
 
 export ash_transform!, ash_transform, ash_evaluate!, ash_evaluate
 function ash_transform!(flm::AbstractArray{<:Complex}, f::AbstractMatrix{<:Complex}, s::Integer, lmax::Integer)
