@@ -624,7 +624,7 @@ function ash_point_delta(ij::Union{CartesianIndex{2},NTuple{2,Int}}, lmax::Integ
     dtheta = sampling_weight_dh(theta, L) / sin(theta)
     dphi = 2π / nphi
     return dtheta, dphi
-endn
+end
 ash_grid_as_phi_theta(grid::AbstractMatrix) = grid
 
 export ash_mode_index
