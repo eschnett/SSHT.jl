@@ -596,7 +596,7 @@ end
 
 export ash_ntheta, ash_nphi, ash_thetas, ash_phis, ash_point_coord, ash_point_delta, ash_grid_as_phi_theta
 ash_ntheta(lmax) = ash_grid_size(lmax)[2]::Int
-ash_nphi(lmax) = ash_gri_size(lmax)[1]::Int
+ash_nphi(lmax) = ash_grid_size(lmax)[1]::Int
 function ash_thetas(lmax::Integer)
     0 ≤ lmax || throw(DomainError(lmax, "Need 0 ≤ lmax"))
     L = Int(lmax) + 1
