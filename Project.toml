@@ -1,7 +1,7 @@
 name = "SSHT"
 uuid = "f9c319a3-ff8a-48d2-8f6c-2646455c3008"
 authors = ["Erik Schnetter <schnetter@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [compat]
 ssht_jll = "1.5.1"
