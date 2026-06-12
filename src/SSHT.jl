@@ -167,7 +167,7 @@ The arrays `flm` and `f` must have the following sizes:
     length(flm) == L^2
     size(f) == (nphi, ntheta)
 
-Use [`SSTH.sampling_elm2ind`](@ref) to access individual modes in the
+Use [`SSHT.sampling_elm2ind`](@ref) to access individual modes in the
 `flm` array.
 
 See the [SSHT
@@ -207,7 +207,7 @@ following size:
     ntheta = SSHT.sampling_dh_ntheta(L)
     size(f) == (nphi, ntheta)
 
-Use [`SSTH.sampling_elm2ind`](@ref) to access individual modes in the
+Use [`SSHT.sampling_elm2ind`](@ref) to access individual modes in the
 `flm` array.
 
 See the [SSHT
@@ -242,7 +242,7 @@ The arrays `flm` and `f` must have the following sizes:
     length(flm) == L^2
     size(f) == (nphi, ntheta)
 
-Use [`SSTH.sampling_elm2ind`](@ref) to access individual modes in the
+Use [`SSHT.sampling_elm2ind`](@ref) to access individual modes in the
 `flm` array.
 
 See the [SSHT
@@ -282,7 +282,7 @@ the following size:
     ntheta = SSHT.sampling_dh_ntheta(L)
     size(f) == (nphi, ntheta)
 
-Use [`SSTH.sampling_elm2ind`](@ref) to access individual modes in the
+Use [`SSHT.sampling_elm2ind`](@ref) to access individual modes in the
 `flm` array.
 
 See the [SSHT
@@ -472,7 +472,7 @@ See
 for a definition of the `ð` (eth) operator.
 
 See also: [`SSHT.eth`](@ref), [`SSHT.ethbar!`](@ref),
-[`SSHT.core_dh_transform_sov!`](@ref),
+[`SSHT.core_dh_forward_sov!`](@ref),
 [`SSHT.core_dh_inverse_sov!`](@ref).
 """
 function eth!(ðflm::AbstractVector, flm::AbstractVector, L::Int, spin::Int)
@@ -513,7 +513,7 @@ See
 for a definition of the `ð` (eth) operator.
 
 See also: [`SSHT.eth`](@ref), [`SSHT.ethbar!`](@ref),
-[`SSHT.core_dh_transform_sov!`](@ref),
+[`SSHT.core_dh_forward_sov!`](@ref),
 [`SSHT.core_dh_inverse_sov!`](@ref).
 """
 eth(flm::AbstractVector, L::Integer, spin::Integer) = eth!(similar(flm), flm, L, spin)
@@ -532,7 +532,7 @@ See
 for a definition of the `ð̄` (eth-bar) operator.
 
 See also: [`SSHT.ethbar`](@ref), [`SSHT.eth!`](@ref),
-[`SSHT.core_dh_transform_sov!`](@ref),
+[`SSHT.core_dh_forward_sov!`](@ref),
 [`SSHT.core_dh_inverse_sov!`](@ref).
 """
 function ethbar!(ð̄flm::AbstractVector, flm::AbstractVector, L::Int, spin::Int)
@@ -573,7 +573,7 @@ See
 for a definition of the `ð` (eth) operator.
 
 See also: [`SSHT.ethbar`](@ref), [`SSHT.eth!`](@ref),
-[`SSHT.core_dh_transform_sov!`](@ref),
+[`SSHT.core_dh_forward_sov!`](@ref),
 [`SSHT.core_dh_inverse_sov!`](@ref).
 """
 ethbar(flm::AbstractVector, L::Integer, spin::Integer) = ethbar!(similar(flm), flm, L, spin)

@@ -1,7 +1,7 @@
 # SSHT.jl: Fast and exact spin-weighted spherical harmonic transforms
 
 This package is a Julia wrapper for the
-[SSHT](https://astro-informatics.github.io/ssht/) library. It
+[ssht](https://astro-informatics.github.io/ssht/) library. It
 calculates spin-weighted spherical harmonic transforms.
 
 * [![Documenter](https://img.shields.io/badge/docs-dev-blue.svg)](https://eschnett.github.io/SSHT.jl/dev)
