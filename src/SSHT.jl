@@ -82,12 +82,11 @@ end
     SSHT.core_dh_inverse_sov_real!(f::AbstractArray{Float64,2},
                                    flm::AbstractVector{Complex{Float64}},
                                    L::Integer,
-                                   spin::Integer,
                                    verbosity::Integer=0)
 
-Evaluate spin-weighted spherical harmonic coefficients `flm` with
-spin-weight `spin`. `L = lmax+1` is the number of modes in `flm`. The
-result `f` is real-valued.
+Evaluate spherical harmonic coefficients `flm` with spin weight 0.
+`L = lmax+1` is the number of modes in `flm`. The result `f` is
+real-valued.
 
 The arrays `flm` and `f` must have the following sizes:
 
@@ -118,13 +117,12 @@ end
 """
     f = SSHT.core_dh_inverse_sov_real(flm::AbstractVector{Complex{Float64}},
                                       L::Integer,
-                                      spin::Integer,
                                       verbosity::Integer=0)
     f::Array{Float64,2}
 
-Evaluate spin-weighted spherical harmonic coefficients `flm` with
-spin-weight `spin`. `L = lmax+1` is the number of modes in `flm`. The
-result `f` is real-valued.
+Evaluate spherical harmonic coefficients `flm` with spin weight 0.
+`L = lmax+1` is the number of modes in `flm`. The result `f` is
+real-valued.
 
 The array `flm` must have the length `L^2`. The result `f` will have
 the following size:
@@ -156,9 +154,9 @@ end
                               spin::Integer,
                               verbosity::Integer=0)
 
-Calculate spin-weighted spherical harmonic coefficients with
-spin-weight `spin` `flm` from grid point values `f`. `L = lmax+1` is
-the number of modes in `flm`.
+Calculate spin-weighted spherical harmonic coefficients `flm` with
+spin weight `spin` from grid point values `f`. `L = lmax+1` is the
+number of modes in `flm`.
 
 The arrays `flm` and `f` must have the following sizes:
 
@@ -190,14 +188,14 @@ function core_dh_forward_sov!(flm::AbstractVector{Complex{Float64}}, f::Abstract
 end
 
 """
-    flm = SSHT.core_dh_forward_sov(fl:AbstractVector{Complex{Float64}},
+    flm = SSHT.core_dh_forward_sov(f::AbstractArray{Complex{Float64},2},
                                    L::Integer,
                                    spin::Integer,
                                    verbosity::Integer=0)
     flm::Vector{Complex{Float64}}
 
 Calculate spin-weighted spherical harmonic coefficients `flm` with
-spin-weight `spin` from grid point values `f`. `L = lmax+1` is the
+spin weight `spin` from grid point values `f`. `L = lmax+1` is the
 number of modes in `flm`.
 
 The array `flm` will have length `L^2`. The input `f` must have the
@@ -228,12 +226,11 @@ end
     SSHT.core_dh_forward_sov_real!(flm::AbstractVector{Complex{Float64}},
                                    f::AbstractArray{Float64,2},
                                    L::Integer,
-                                   spin::Integer,
                                    verbosity::Integer=0)
 
-Calculate spin-weighted spherical harmonic coefficients `flm` with
-spin-weight `spin` from real-valued grid point values `f`. `L =
-lmax+1` is the number of modes in `flm`.
+Calculate spherical harmonic coefficients `flm` with spin weight 0
+from real-valued grid point values `f`. `L = lmax+1` is the number of
+modes in `flm`.
 
 The arrays `flm` and `f` must have the following sizes:
 
@@ -265,18 +262,17 @@ function core_dh_forward_sov_real!(flm::AbstractVector{Complex{Float64}}, f::Abs
 end
 
 """
-    flm = SSHT.core_dh_inverse_sov_real(f::AbstractVector{Float64},
+    flm = SSHT.core_dh_forward_sov_real(f::AbstractArray{Float64,2},
                                         L::Integer,
-                                        spin::Integer,
                                         verbosity::Integer=0)
-    f::Array{Complex{Float64},2}
+    flm::Vector{Complex{Float64}}
 
-Calculate spin-weighted spherical harmonic coefficients `flm` with
-spin-weight `spin` from real-valued grid point values `f`. `L =
-lmax+1` is the number of modes in `flm`.
+Calculate spherical harmonic coefficients `flm` with spin weight 0
+from real-valued grid point values `f`. `L = lmax+1` is the number of
+modes in `flm`.
 
-The array `flm` must have the length `L^2`. The result `f` will have
-the following size:
+The array `flm` will have length `L^2`. The input `f` must have the
+following size:
 
     nphi = SSHT.sampling_dh_nphi(L)
     ntheta = SSHT.sampling_dh_ntheta(L)
@@ -319,7 +315,7 @@ end
     n = sampling_dh_n(L::Integer)
     n::Int
 
-Total number of unique collocation points for `L = lmax+1` modes that.
+Total number of unique collocation points for `L = lmax+1` modes.
 (If the collocation scheme places points onto the poles, then not all
 collocation points are unique.)
 
@@ -365,7 +361,7 @@ See also: [`SSHT.sampling_dh_t2theta`](@ref),
 sampling_dh_p2phi(p::Integer, L::Integer) = Float64(ccall((:ssht_sampling_dh_p2phi, libssht), Cdouble, (Cint, Cint), p - 1, L))
 
 """
-    theta = sampling_dh_p2theta(t::Integer, L::Integer)
+    theta = sampling_dh_t2theta(t::Integer, L::Integer)
     theta::Float64
 
 Calculate the `theta` coordinate for point `t` in the `theta` direction
@@ -382,7 +378,7 @@ sampling_dh_t2theta(t::Integer, L::Integer) = Float64(ccall((:ssht_sampling_dh_t
 
 Calculate the sampling weight of a point with the given `theta`
 coordinate. This value is essentially `sin(theta) * dtheta`, possibly
-modified to achive higher accuracy depending on how the collocation
+modified to achieve higher accuracy depending on how the collocation
 points are spaced out in the `theta` direction.
 
 Integrating a function over the sphere should be done as follows:
@@ -422,10 +418,10 @@ end
     ind = sampling_elm2ind(el::Integer, m::Integer)
     ind::Int
 
-Calculate the mode array index `ind` for a given mode `l`, `m`. For `L
-= lmax+1` modes, there are `L^2` modes in total.
+Calculate the mode array index `ind` for a given mode `el`, `m`. For
+`L = lmax+1` modes, there are `L^2` modes in total: `1 ≤ ind ≤ L^2`.
 
-See also: [`sampling_ind2elm`](@ref).
+See also: [`SSHT.sampling_ind2elm`](@ref).
 """
 function sampling_elm2ind(el::Int, m::Int)
     0 ≤ el || throw(DomainError(el, "Need 0 ≤ el"))
@@ -444,9 +440,9 @@ Calculate the mode numbers `l` and `m` from a given mode array index
 ind ≤ L^2`.
 
 This function needs to evaluate a square root internally. If possible,
-using [`sampling_elm2ind`](@ref) instead is slightly preferred.
+using [`SSHT.sampling_elm2ind`](@ref) instead is slightly preferred.
 
-See also: [`sampling_elm2ind`](@ref).
+See also: [`SSHT.sampling_elm2ind`](@ref).
 """
 function sampling_ind2elm(ind::Int)
     1 ≤ ind || throw(DomainError(ind, "Need 1 ≤ ind"))
@@ -462,8 +458,8 @@ sampling_ind2elm(ind::Integer) = sampling_ind2elm(Int(ind))
     eth!(ðflm::AbstractVector, flm::AbstractVector, L::Integer, spin::Integer)
 
 Calculate the `ð` (eth) derivative of the spin-weighted spherical
-harmonic coefficients `flm` with spin weight `s`. `L = lmax+1` is the
-number of modes in `flm`. The result has spin weight `s+1`.
+harmonic coefficients `flm` with spin weight `spin`. `L = lmax+1` is
+the number of modes in `flm`. The result has spin weight `spin+1`.
 
 The arrays `ðflm` and `flm` must have length `L^2`.
 
@@ -502,8 +498,8 @@ eth!(ðflm::AbstractVector, flm::AbstractVector, L::Integer, spin::Integer) = et
     ðflm::AbstractVector
 
 Calculate the `ð` (eth) derivative of the spin-weighted spherical
-harmonic coefficients `flm` with spin weight `s`. `L = lmax+1` is the
-number of modes in `flm`. The result has spin weight `s+1`.
+harmonic coefficients `flm` with spin weight `spin`. `L = lmax+1` is
+the number of modes in `flm`. The result has spin weight `spin+1`.
 
 The array `flm` must have length `L^2`. The result `ðflm` will also
 have length `L^2`.
@@ -512,7 +508,7 @@ See
 [Wikipedia](https://en.wikipedia.org/wiki/Spin-weighted_spherical_harmonics)
 for a definition of the `ð` (eth) operator.
 
-See also: [`SSHT.eth`](@ref), [`SSHT.ethbar!`](@ref),
+See also: [`SSHT.eth!`](@ref), [`SSHT.ethbar`](@ref),
 [`SSHT.core_dh_forward_sov!`](@ref),
 [`SSHT.core_dh_inverse_sov!`](@ref).
 """
@@ -522,8 +518,8 @@ eth(flm::AbstractVector, L::Integer, spin::Integer) = eth!(similar(flm), flm, L,
     ethbar!(ð̄flm::AbstractVector, flm::AbstractVector, L::Integer, spin::Integer)
 
 Calculate the `ð̄` (eth-bar) derivative of the spin-weighted spherical
-harmonic coefficients `flm` with spin weight `s`. `L = lmax+1` is the
-number of modes in `flm`. The result has spin weight `s-1`.
+harmonic coefficients `flm` with spin weight `spin`. `L = lmax+1` is
+the number of modes in `flm`. The result has spin weight `spin-1`.
 
 The arrays `ð̄flm` and `flm` must have length `L^2`.
 
@@ -561,18 +557,18 @@ ethbar!(ð̄flm::AbstractVector, flm::AbstractVector, L::Integer, spin::Integer)
     ð̄flm = ethbar(flm::AbstractVector, L::Integer, spin::Integer)
     ð̄flm::AbstractVector
 
-Calculate the `ð̄` (eth) derivative of the spin-weighted spherical
-harmonic coefficients `flm` with spin weight `s`. `L = lmax+1` is the
-number of modes in `flm`. The result has spin weight `s-1`.
+Calculate the `ð̄` (eth-bar) derivative of the spin-weighted spherical
+harmonic coefficients `flm` with spin weight `spin`. `L = lmax+1` is
+the number of modes in `flm`. The result has spin weight `spin-1`.
 
 The array `flm` must have length `L^2`. The result `ð̄flm` will also
 have length `L^2`.
 
 See
 [Wikipedia](https://en.wikipedia.org/wiki/Spin-weighted_spherical_harmonics)
-for a definition of the `ð` (eth) operator.
+for a definition of the `ð̄` (eth-bar) operator.
 
-See also: [`SSHT.ethbar`](@ref), [`SSHT.eth!`](@ref),
+See also: [`SSHT.ethbar!`](@ref), [`SSHT.eth`](@ref),
 [`SSHT.core_dh_forward_sov!`](@ref),
 [`SSHT.core_dh_inverse_sov!`](@ref).
 """
